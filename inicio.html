@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BEBIDAS YA!</title>
+
+  <!-- Fuentes y estilos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      padding-bottom: 70px;
+      background-color: white;
+    }
+
+    .navbar {
+      background-color: #ffffffc0 !important;
+      padding: 1.5rem 2rem;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 6px rgba(19, 18, 18, 0.973);
+    }
+
+    .navbar .logo {
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .exclamacion {
+      color: black !important;
+      font-weight: bold;
+    }
+
+    .categoria {
+      color: white !important;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .icono-negro {
+      color: black !important;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .scroll-horizontal {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .item-horizontal {
+      flex: 0 0 auto;
+      width: 250px;
+    }
+
+    .card {
+      width: 250px;
+      flex-shrink: 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .card img {
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #fff;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .nav-item {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #000;
+    }
+
+    .search-bar {
+      max-width: 400px;
+      margin: 0 auto 1rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <h1 class="m-0 text-dark logo">¡<span class="exclamacion">BEBIDAS YA!</span></h1>
+  </nav>
+
+  <div class="container mt-4">
+
+    <!-- 🔍 Barra de búsqueda -->
+    <div class="search-bar">
+      <input type="text" id="busqueda" class="form-control" placeholder="Buscar bebida...">
+    </div>
+     <h3 class="mb-3 text-success text-center">BEBIDAS</h3>
+
+    <div class="scroll-horizontal" id="contenedor-productos">
+
+      <!-- Producto 1 -->
+      <div class="card producto">
+        <img src="data:image/jpeg;base64,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" class="card-img-top" alt="JAVA DE CLUB VERDE">
+        <div class="card-body text-center">
+          <h6 class="card-title">VERDE</h6>
+          <p class="text-success fw-bold">$2</p>
+          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
+          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
+        </div>
+      </div>
+
+      <!-- Producto 2 -->
+      <div class="card producto">
+        <img src="java de club.jpeg" class="card-img-top" alt="BOTELLA DE CLUB PEQUEÑA">
+        <div class="card-body text-center">
+          <h6 class="card-title">BOTELLA DE CLUB PEQUEÑA</h6>
+          <p class="text-success fw-bold">$19</p>
+          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
+          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  
+    <div class="scroll-horizontal" id="contenedor-productos">
+
+      <!-- Producto 1 -->
+      <div class="card producto">
+        <img src="club pequeña.jpeg" class="card-img-top" alt="JAVA DE CLUB VERDE">
+        <div class="card-body text-center">
+          <h6 class="card-title">VERDE</h6>
+          <p class="text-success fw-bold">$2</p>
+          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
+          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
+        </div>
+      </div>
+
+      <!-- Producto 2 -->
+      <div class="card producto">
+        <img src="club pequeña.jpeg" class="card-img-top" alt="BOTELLA DE CLUB PEQUEÑA">
+        <div class="card-body text-center">
+          <h6 class="card-title">BOTELLA DE CLUB PEQUEÑA</h6>
+          <p class="text-success fw-bold">$19</p>
+          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
+          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+      
+
+  <!-- Barra inferior -->
+  <nav class="bottom-nav">
+    <a href="play.html" class="nav-item">
+      <i class="fas fa-home fa-lg"></i>
+      <div>Inicio</div>
+    </a>
+    <a href="carrito.html" class="nav-item">
+      <i class="fas fa-shopping-cart fa-lg"></i>
+      <div>Carrito</div>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script>
+    // Agregar productos al carrito
+    document.querySelectorAll(".buy-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const card = btn.closest(".card");
+        const name = card.querySelector(".card-title").textContent.trim();
+        const price = parseFloat(card.querySelector("p").textContent.replace("$", ""));
+        const image = card.querySelector("img").getAttribute("src");
+        const quantity = parseInt(card.querySelector("input").value);
+
+        if (isNaN(quantity) || quantity < 1) {
+          alert("Cantidad inválida");
+          return;
+        }
+
+        let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+        const existing = carrito.find(item => item.nombre === name);
+
+        if (existing) {
+          existing.cantidad += quantity;
+        } else {
+          carrito.push({ nombre: name, precio: price, cantidad: quantity, imagen: image });
+        }
+
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        alert("Producto agregado al carrito");
+      });
+    });
+
+    // Filtrar productos por búsqueda
+    document.getElementById("busqueda").addEventListener("input", function () {
+      const filtro = this.value.toLowerCase();
+      document.querySelectorAll(".producto").forEach(card => {
+        const titulo = card.querySelector(".card-title").textContent.toLowerCase();
+        card.style.display = titulo.includes(filtro) ? "block" : "none";
+      });
+    });
+  </script>
+</body>
+</html>
+
