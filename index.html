@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hola</title>
+  <title>BEBIDAS YA!</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <style>
     body {
@@ -19,17 +19,17 @@
 
     .typing {
       font-size: 3.5rem;
-      color: #198754;
-      border-right: 3px solid #198754;
+      color: #000000; /* Letras negras */
+      border-right: 3px solid #000000;
       white-space: nowrap;
       overflow: hidden;
       width: 0;
-      animation: typing 4s steps(20, end) forwards, blink 0.8s step-end infinite;
+      animation: typing 4s steps(12, end) forwards, blink 0.8s step-end infinite;
     }
 
     @keyframes typing {
       from { width: 0 }
-      to { width: 6.5ch }
+      to { width: 10.5ch }
     }
 
     @keyframes blink {
@@ -44,11 +44,11 @@
   </style>
 </head>
 <body>
-  <h1 class="typing">Hello</h1>
+  <h1 class="typing">¡BEBIDAS YA!</h1>
 
   <script>
     setTimeout(() => {
-      window.location.href = "2.html";
+      window.location.href = "inicio.html";
     }, 4500); // Espera 4.5 segundos para redirigir
   </script>
 </body>
