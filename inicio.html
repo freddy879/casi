@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,43 +37,28 @@
       font-weight: bold;
     }
 
-    .categoria {
-      color: white !important;
-      font-weight: bold;
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-
-    .icono-negro {
-      color: black !important;
-      font-size: 1.3rem;
-      cursor: pointer;
-    }
-
-    .scroll-horizontal {
-      display: flex;
-      overflow-x: auto;
+    /* Grid de 2 columnas */
+    .productos-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
       padding: 1rem;
     }
 
-    .item-horizontal {
-      flex: 0 0 auto;
-      width: 250px;
-    }
-
     .card {
-      width: 250px;
-      flex-shrink: 0;
+      width: 100%;
       border: 1px solid #ccc;
       border-radius: 10px;
+      overflow: hidden;
     }
 
     .card img {
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
     }
 
+    /* Barra inferior */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -87,9 +73,23 @@
     }
 
     .nav-item {
+      position: relative;
       text-align: center;
       font-size: 0.9rem;
       color: #000;
+    }
+
+    /* Contador del carrito */
+    .contador {
+      position: absolute;
+      top: -5px;
+      right: -10px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      font-size: 12px;
+      padding: 2px 6px;
+      font-weight: bold;
     }
 
     .search-bar {
@@ -111,26 +111,46 @@
     <div class="search-bar">
       <input type="text" id="busqueda" class="form-control" placeholder="Buscar bebida...">
     </div>
-     <h3 class="mb-3 text-success text-center">BEBIDAS</h3>
 
-    <div class="scroll-horizontal" id="contenedor-productos">
+    <h3 class="mb-3 text-success text-center">BEBIDAS</h3>
 
-      <!-- Producto 1 -->
+    <!-- Grid de productos -->
+    <div class="productos-grid" id="contenedor-productos">
+
       <div class="card producto">
-        <img src="club-cerveza-club-twist-off-pack-24-x-330-ml.jpg" class="card-img-top" alt="JAVA DE CLUB VERDE">
+        <img src="club-cerveza-club-twist-off-pack-24-x-330-ml.jpg" alt="JAVA DE CLUB VERDE">
         <div class="card-body text-center">
-          <h6 class="card-title">caja</h6>
+          <h6 class="card-title">Caja</h6>
           <p class="text-success fw-bold">$2</p>
           <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
           <button class="btn btn-success btn-sm buy-btn">Comprar</button>
         </div>
       </div>
 
-      <!-- Producto 2 -->
       <div class="card producto">
-        <img src="java de club.jpeg" class="card-img-top" alt="BOTELLA DE CLUB PEQUEÑA">
+        <img src="java de club.jpeg" alt="BOTELLA DE CLUB PEQUEÑA">
         <div class="card-body text-center">
-          <h6 class="card-title">BOTELLA DE CLUB PEQUEÑA</h6>
+          <h6 class="card-title">Botella de Club Pequeña</h6>
+          <p class="text-success fw-bold">$19</p>
+          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
+          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
+        </div>
+      </div>
+
+      <div class="card producto">
+        <img src="soprano.jpg" alt="Soprano">
+        <div class="card-body text-center">
+          <h6 class="card-title">Soprano</h6>
+          <p class="text-success fw-bold">$2</p>
+          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
+          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
+        </div>
+      </div>
+
+      <div class="card producto">
+        <img src="java de club.jpeg" alt="BOTELLA DE CLUB PEQUEÑA">
+        <div class="card-body text-center">
+          <h6 class="card-title">Botella de Club Pequeña</h6>
           <p class="text-success fw-bold">$19</p>
           <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
           <button class="btn btn-success btn-sm buy-btn">Comprar</button>
@@ -140,78 +160,25 @@
     </div>
   </div>
 
-  
-    <div class="scroll-horizontal" id="contenedor-productos">
-
-      <!-- Producto 1 -->
-      <div class="card producto">
-        <img src="club pequeña.jpeg" class="card-img-top" alt="JAVA DE CLUB VERDE">
-        <div class="card-body text-center">
-          <h6 class="card-title">VERDE 12</h6>
-          <p class="text-success fw-bold">$2</p>
-          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
-          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
-        </div>
-      </div>
-
-      <!-- Producto 2 -->
-      <div class="card producto">
-        <img src="soprano.jpg" class="card-img-top" alt="BOTELLA DE CLUB PEQUEÑA">
-        <div class="card-body text-center">
-          <h6 class="card-title">BOTELLA DE VINO SOPRANO</h6>
-          <p class="text-success fw-bold">$3.75</p>
-          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
-          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-     <div class="scroll-horizontal" id="contenedor-productos">
-
-   <!-- Producto 2 -->
-      <div class="card producto">
-        <img src="corona.jpeg" class="card-img-top" alt="BOTELLA DE CLUB PEQUEÑA">
-        <div class="card-body text-center">
-          <h6 class="card-title">BOTELLA DE VINO SOPRANO</h6>
-          <p class="text-success fw-bold">$3.75</p>
-          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
-          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
-        </div>
-      </div>
-
-
-      <!-- Producto 2 -->
-      <div class="card producto">
-        <img src="soprano.jpg" class="card-img-top" alt="BOTELLA DE CLUB PEQUEÑA">
-        <div class="card-body text-center">
-          <h6 class="card-title">BOTELLA DE VINO SOPRANO</h6>
-          <p class="text-success fw-bold">$3.75</p>
-          <input type="number" value="1" min="1" class="form-control form-control-sm mb-2" />
-          <button class="btn btn-success btn-sm buy-btn">Comprar</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-      
-
   <!-- Barra inferior -->
   <nav class="bottom-nav">
-    <a href="play.html" class="nav-item">
+    <a href="index.html" class="nav-item">
       <i class="fas fa-home fa-lg"></i>
       <div>Inicio</div>
     </a>
     <a href="carrito.html" class="nav-item">
       <i class="fas fa-shopping-cart fa-lg"></i>
+      <span id="contador-carrito" class="contador">0</span>
       <div>Carrito</div>
     </a>
   </nav>
 
   <!-- Scripts -->
   <script>
+    // Mostrar cantidad en el carrito
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    document.getElementById("contador-carrito").textContent = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+
     // Agregar productos al carrito
     document.querySelectorAll(".buy-btn").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -236,7 +203,9 @@
         }
 
         localStorage.setItem("carrito", JSON.stringify(carrito));
-        alert("Producto agregado al carrito");
+
+        // Actualizar contador
+        document.getElementById("contador-carrito").textContent = carrito.reduce((acc, item) => acc + item.cantidad, 0);
       });
     });
 
@@ -251,3 +220,4 @@
   </script>
 </body>
 </html>
+
