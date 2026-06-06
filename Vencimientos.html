@@ -1,164 +1,393 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Carrito - BEBIDAS YA!</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>ContaNexus — Vencimientos</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0f1117;
+  --surface:  #1a1d27;
+  --card:     #21253a;
+  --border:   rgba(255,255,255,0.07);
+  --accent:   #ff3f34;
+  --green:    #00e096;
+  --yellow:   #ffb547;
+  --orange:   #ff7b54;
+  --blue:     #4f8ef7;
+  --text:     #eef0f8;
+  --muted:    #6b7494;
+  --mono:     'Space Mono', monospace;
+  --sans:     'DM Sans', sans-serif;
+  --nav-h:    64px;
+  --top-h:    56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-  <!-- Fuentes y estilos -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+/* TOP */
+.topbar {
+  position: fixed; top:0; left:0; right:0; height: var(--top-h);
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; z-index: 100;
+}
+.topbar-brand { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: 3px; }
+.topbar-title  { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.topbar-fecha  { font-family: var(--mono); font-size: 10px; color: var(--muted); }
 
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      padding-bottom: 70px;
-      background-color: white;
-    }
+/* SCROLL */
+.scroll-area {
+  padding-top: calc(var(--top-h) + 12px);
+  padding-bottom: calc(var(--nav-h) + 16px);
+  padding-left: 14px; padding-right: 14px;
+}
 
-    .navbar {
-      background-color: #ffffffc0 !important;
-      padding: 1.5rem 2rem;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 6px rgba(19, 18, 18, 0.973);
-    }
+/* ALERT BANNER */
+.alert-banner {
+  background: rgba(255,63,52,.1); border: 1px solid rgba(255,63,52,.25);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 12px;
+  display: none; align-items: center; gap: 10px;
+}
+.alert-banner.visible { display: flex; }
+.alert-banner .ab-ico { font-size: 22px; flex-shrink: 0; }
+.alert-banner .ab-text { font-size: 13px; font-weight: 600; color: var(--accent); }
+.alert-banner .ab-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-    .logo {
-      font-weight: bold;
-      font-size: 1.5rem;
-      color: black;
-    }
+/* STAT ROW */
+.stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 12px; display: flex; align-items: center; gap: 10px;
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content:''; position: absolute; top:0; left:0; right:0; height: 3px;
+  background: var(--sc-color, var(--accent)); border-radius: 14px 14px 0 0;
+}
+.stat-ico  { font-size: 22px; }
+.stat-val  { font-family: var(--mono); font-size: 24px; font-weight: 700; color: var(--sc-color, var(--text)); }
+.stat-lbl  { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
 
-    .exclamacion {
-      color: #17a117 !important;
-      font-weight: bold;
-    }
+/* FILTER CHIPS */
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; margin-bottom: 12px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0; padding: 7px 14px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--card);
+  color: var(--muted); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .15s; font-family: var(--sans);
+}
+.chip:active { transform: scale(0.95); }
+.chip.active-vencido { background: rgba(255,63,52,.15); border-color: var(--accent); color: var(--accent); }
+.chip.active-critico  { background: rgba(255,181,71,.12); border-color: var(--yellow); color: var(--yellow); }
+.chip.active-proximo  { background: rgba(79,142,247,.12); border-color: var(--blue); color: var(--blue); }
+.chip.active-estable  { background: rgba(0,224,150,.12); border-color: var(--green); color: var(--green); }
+.chip.active-all      { background: var(--accent); border-color: var(--accent); color: white; }
 
-    .cart-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 0;
-      border-bottom: 1px solid #ccc;
-    }
+/* SEARCH */
+.search-wrap { margin-bottom: 12px; }
+.search-input {
+  width: 100%; background: var(--card); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 14px; border-radius: 12px;
+  font-size: 14px; font-family: var(--sans); outline: none;
+}
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: var(--accent); }
 
-    .cart-item img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-right: 1rem;
-      border: 1px solid #ccc;
-    }
+/* SECTION HEADER */
+.section-hd { display: flex; align-items: center; gap: 8px; margin: 10px 0 8px; }
+.section-hd span { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+.section-hd::after { content:''; flex:1; height:1px; background: var(--border); }
+.total-label { font-size: 11px; color: var(--muted); }
 
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background-color: #fff;
-      border-top: 1px solid #ccc;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
+/* PRODUCTO CARD */
+.prod-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+  position: relative; overflow: hidden;
+}
+.prod-card::before {
+  content:''; position: absolute; left:0; top:0; bottom:0; width: 4px;
+  background: var(--pc-color, var(--muted)); border-radius: 14px 0 0 14px;
+}
+.prod-body { flex: 1; min-width: 0; }
+.prod-nombre { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prod-meta   { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.prod-meta span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 3px; }
+.prod-right { text-align: right; flex-shrink: 0; }
+.dias-val  { font-family: var(--mono); font-size: 20px; font-weight: 700; }
+.dias-unit { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.stock-val { font-family: var(--mono); font-size: 13px; color: var(--muted); margin-top: 4px; }
 
-    .nav-item {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #000;
-    }
-  </style>
+/* BADGE */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px;
+  border-radius: 12px; font-size: 10px; font-weight: 700;
+}
+.b-vencido { background: rgba(255,63,52,.15);  color: var(--accent); }
+.b-critico  { background: rgba(255,181,71,.15); color: var(--yellow); }
+.b-proximo  { background: rgba(79,142,247,.15); color: var(--blue); }
+.b-estable  { background: rgba(0,224,150,.15);  color: var(--green); }
+
+/* BARRA PROGRESO DÍAS */
+.days-bar { height: 4px; border-radius: 2px; background: var(--border); margin-top: 6px; overflow: hidden; }
+.days-fill { height: 100%; border-radius: 2px; transition: width .5s; }
+
+/* EMPTY / SPINNER */
+.empty { text-align: center; padding: 50px 20px; color: var(--muted); }
+.empty .ei { font-size: 36px; margin-bottom: 10px; }
+.empty p { font-size: 13px; }
+.spinner { display: block; width: 26px; height: 26px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 40px auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: calc(var(--nav-h) + 14px); left: 14px; right: 14px;
+  background: var(--surface); color: var(--text); padding: 12px 16px;
+  border-radius: 12px; font-size: 13px; font-weight: 600; border: 1px solid var(--border);
+  transform: translateY(20px); opacity: 0;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1); z-index: 1000; text-align: center;
+}
+.toast.visible { transform: none; opacity: 1; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed; bottom:0; left:0; right:0; height: var(--nav-h);
+  background: var(--surface); border-top: 1px solid var(--border);
+  display: flex; z-index: 100;
+}
+.nav-item {
+  flex:1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px; text-decoration: none;
+  color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .5px;
+  transition: color .15s; padding-bottom: 4px;
+}
+.nav-item .ico { font-size: 20px; }
+.nav-item.active { color: var(--accent); }
+</style>
 </head>
-
 <body>
 
-  <nav class="navbar">
-    <h1 class="m-0 logo">Tu <span class="exclamacion">carrito</span></h1>
-  </nav>
+<div class="topbar">
+  <span class="topbar-brand">NEXUS</span>
+  <span class="topbar-title">Vencimientos</span>
+  <span class="topbar-fecha" id="txt-fecha"></span>
+</div>
 
-  <div class="container my-4">
-    <div id="carrito-contenido"></div>
-    <div class="text-end mt-3">
-      <h5 id="total"></h5>
-      <a id="whatsapp-link" class="btn btn-success mb-2" href="#" target="_blank">Enviar pedido por WhatsApp</a>
-      <button class="btn btn-outline-danger" onclick="vaciarCarrito()">Vaciar carrito</button>
+<div class="scroll-area">
+
+  <!-- ALERT -->
+  <div class="alert-banner" id="alert-banner">
+    <div class="ab-ico">🚨</div>
+    <div>
+      <div class="ab-text" id="alert-text">Productos críticos</div>
+      <div class="ab-sub" id="alert-sub">Requieren atención inmediata</div>
     </div>
   </div>
 
-  <!-- Barra inferior -->
-  <nav class="bottom-nav">
-    <a href="inicio.html" class="nav-item">
-      <i class="fas fa-home fa-lg"></i>
-      <div>Inicio</div>
-    </a>
-    <a href="carrito.html" class="nav-item">
-      <i class="fas fa-shopping-cart fa-lg"></i>
-      <div>Carrito</div>
-    </a>
-  </nav>
+  <!-- STATS -->
+  <div class="stat-row">
+    <div class="stat-card" style="--sc-color:var(--accent)">
+      <div class="stat-ico">🛑</div>
+      <div><div class="stat-val" id="stat-vencidos">-</div><div class="stat-lbl">Vencidos</div></div>
+    </div>
+    <div class="stat-card" style="--sc-color:var(--yellow)">
+      <div class="stat-ico">⚠️</div>
+      <div><div class="stat-val" id="stat-criticos">-</div><div class="stat-lbl">Críticos ≤15d</div></div>
+    </div>
+    <div class="stat-card" style="--sc-color:var(--blue)">
+      <div class="stat-ico">⏳</div>
+      <div><div class="stat-val" id="stat-proximos">-</div><div class="stat-lbl">Próximos ≤45d</div></div>
+    </div>
+    <div class="stat-card" style="--sc-color:var(--green)">
+      <div class="stat-ico">✅</div>
+      <div><div class="stat-val" id="stat-estables">-</div><div class="stat-lbl">Estables</div></div>
+    </div>
+  </div>
 
-  <script>
-    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-    const contenedor = document.getElementById("carrito-contenido");
-    const total = document.getElementById("total");
-    const whatsappLink = document.getElementById("whatsapp-link");
+  <!-- CHIPS FILTRO -->
+  <div class="chips">
+    <button class="chip active-all" onclick="filtrarEstado('',this,'active-all')">Todos</button>
+    <button class="chip" onclick="filtrarEstado('vencido',this,'active-vencido')">🛑 Vencidos</button>
+    <button class="chip" onclick="filtrarEstado('critico',this,'active-critico')">⚠️ Críticos</button>
+    <button class="chip" onclick="filtrarEstado('proximo',this,'active-proximo')">⏳ Próximos</button>
+    <button class="chip" onclick="filtrarEstado('estable',this,'active-estable')">✅ Estables</button>
+  </div>
 
-    function renderizarCarrito() {
-      contenedor.innerHTML = "";
-      if (carrito.length === 0) {
-        contenedor.innerHTML = "<p class='text-center'>Tu carrito está vacío.</p>";
-        total.textContent = "";
-        whatsappLink.style.display = "none";
-        return;
-      }
+  <!-- BÚSQUEDA -->
+  <div class="search-wrap">
+    <input class="search-input" type="text" id="filtro-nombre" placeholder="🔍 Buscar producto o código...">
+  </div>
 
-      let suma = 0;
-      let mensaje = "*Pedido desde BEBIDAS YA!*%0A";
+  <!-- LISTA -->
+  <div class="section-hd">
+    <span>Productos</span>
+    <span class="total-label" id="total-label"></span>
+  </div>
+  <div id="lista-prod">
+    <div class="spinner"></div>
+  </div>
 
-      carrito.forEach(item => {
-        const subtotal = item.precio * item.cantidad;
-        suma += subtotal;
-        mensaje += `${item.cantidad} x ${item.nombre} = $${subtotal.toFixed(2)}%0A`;
+</div>
 
-        contenedor.innerHTML += `
-          <div class="cart-item">
-            <img src="${item.imagen}" alt="${item.nombre}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Img'">
-            <div>
-              <strong>${item.nombre}</strong><br>
-              <small>${item.cantidad} x $${item.precio.toFixed(2)}</small>
-            </div>
-            <div>
-              <span>$${subtotal.toFixed(2)}</span><br>
-              <button class="btn btn-sm btn-danger mt-1" onclick="eliminarProducto('${item.nombre}')">Eliminar</button>
-            </div>
-          </div>
-        `;
-      });
+<div class="toast" id="toast"></div>
 
-      total.textContent = `Total: $${suma.toFixed(2)}`;
-      whatsappLink.href = `https://wa.me/593939079441?text=${mensaje}%0A💰 *Total: $${suma.toFixed(2)}*`;
-      whatsappLink.style.display = "inline-block";
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html"><span class="ico">📅</span><span>Caja</span></a>
+  <a class="nav-item" href="entrada_salida.html"><span class="ico">🔄</span><span>Inventario</span></a>
+  <a class="nav-item active" href="vencimientos.html"><span class="ico">⏳</span><span>Vencimientos</span></a>
+</nav>
+
+<script>
+const API = location.hostname==='localhost'||location.hostname==='127.0.0.1'
+  ? 'http://localhost:3000'
+  : 'https://agronaranjito-1.onrender.com';
+
+document.getElementById('txt-fecha').textContent =
+  new Date().toLocaleDateString('es-EC',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+let todos=[], filtrados=[], estadoActivo='', chipClaseActiva='active-all';
+const $=id=>document.getElementById(id);
+
+async function cargar() {
+  $('lista-prod').innerHTML='<div class="spinner"></div>';
+  try {
+    const res=await fetch(API+'/inventario/caducidades');
+    if (!res.ok) throw new Error();
+    todos=procesarProductos(await res.json());
+    filtrados=[...todos];
+    actualizarStats();
+    renderLista();
+    checkAlert();
+    toast('✅ Sincronizado');
+  } catch {
+    $('lista-prod').innerHTML=`<div class="empty"><div class="ei">⚠️</div><p>Error al conectar</p></div>`;
+  }
+}
+
+function procesarProductos(raw) {
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  return raw.map(p=>{
+    const fo=p.fechaVencimiento||p.caducidad||p.vencimiento;
+    if (!fo) return null;
+    const fs=String(fo).includes('T')?fo:fo+'T00:00:00';
+    const fv=new Date(fs);
+    if (isNaN(fv.getTime())) return null;
+    fv.setHours(0,0,0,0);
+    const dias=Math.ceil((fv-hoy)/86400000);
+    let estado;
+    if(dias<=0)estado='vencido';
+    else if(dias<=15)estado='critico';
+    else if(dias<=45)estado='proximo';
+    else estado='estable';
+    return {...p,fechaVenc:fv,dias,estado,stock:p.stock??p.stockActual??0};
+  }).filter(Boolean).sort((a,b)=>a.dias-b.dias);
+}
+
+function actualizarStats() {
+  $('stat-vencidos').textContent=todos.filter(p=>p.estado==='vencido').length;
+  $('stat-criticos').textContent=todos.filter(p=>p.estado==='critico').length;
+  $('stat-proximos').textContent=todos.filter(p=>p.estado==='proximo').length;
+  $('stat-estables').textContent=todos.filter(p=>p.estado==='estable').length;
+}
+
+function checkAlert() {
+  const v=todos.filter(p=>p.estado==='vencido').length;
+  const c=todos.filter(p=>p.estado==='critico').length;
+  const banner=$('alert-banner');
+  if(v+c>0) {
+    banner.classList.add('visible');
+    $('alert-text').textContent=`${v} vencido${v!==1?'s':''} · ${c} crítico${c!==1?'s':''}`;
+    $('alert-sub').textContent='Requieren atención inmediata';
+  }
+}
+
+function filtrarEstado(estado, el, claseActiva) {
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.remove('active-all','active-vencido','active-critico','active-proximo','active-estable');
+  });
+  el.classList.add(claseActiva);
+  estadoActivo=estado;
+  aplicarFiltros();
+}
+
+function aplicarFiltros() {
+  const nombre=$('filtro-nombre').value.toLowerCase().trim();
+  filtrados=todos.filter(p=>{
+    if(estadoActivo&&p.estado!==estadoActivo)return false;
+    if(nombre&&!(p.nombre||'').toLowerCase().includes(nombre)&&!(p.codigo||'').toLowerCase().includes(nombre))return false;
+    return true;
+  });
+  renderLista();
+}
+
+function renderLista() {
+  const cont=$('lista-prod');
+  $('total-label').textContent=`${filtrados.length} producto${filtrados.length!==1?'s':''}`;
+
+  if (!filtrados.length) {
+    cont.innerHTML=`<div class="empty"><div class="ei">📭</div><p>Sin productos que coincidan</p></div>`;
+    return;
+  }
+
+  cont.innerHTML = filtrados.map(p => {
+    const fechaStr=p.fechaVenc.toLocaleDateString('es-EC',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+    let color, badge, diasTxt, diasSub;
+    const ad=Math.abs(p.dias);
+
+    if(p.estado==='vencido'){
+      color='var(--accent)'; badge=`<span class="badge b-vencido">🛑 Vencido</span>`;
+      diasTxt=ad; diasSub=`hace ${ad}d`;
+    } else if(p.estado==='critico'){
+      color='var(--yellow)'; badge=`<span class="badge b-critico">⚠️ Crítico</span>`;
+      diasTxt=p.dias; diasSub='días';
+    } else if(p.estado==='proximo'){
+      color='var(--blue)'; badge=`<span class="badge b-proximo">⏳ Próximo</span>`;
+      diasTxt=p.dias; diasSub='días';
+    } else {
+      color='var(--green)'; badge=`<span class="badge b-estable">✅ Estable</span>`;
+      diasTxt=p.dias; diasSub='días';
     }
 
-    function eliminarProducto(nombre) {
-      carrito = carrito.filter(item => item.nombre !== nombre);
-      localStorage.setItem("carrito", JSON.stringify(carrito));
-      renderizarCarrito();
-    }
+    // Barra de peligro: 0..90 días → 0..100% de riesgo
+    const riesgo = p.dias<=0 ? 100 : Math.max(0, 100 - Math.min(p.dias,90)/90*100);
+    const barColor = p.dias<=0?'var(--accent)':p.dias<=15?'var(--yellow)':p.dias<=45?'var(--blue)':'var(--green)';
 
-    function vaciarCarrito() {
-      if (confirm("¿Estás seguro de que quieres vaciar el carrito?")) {
-        localStorage.removeItem("carrito");
-        carrito = [];
-        renderizarCarrito();
-      }
-    }
+    return `
+    <div class="prod-card" style="--pc-color:${color}">
+      <div class="prod-body">
+        <div class="prod-nombre">${p.nombre||'Sin nombre'}</div>
+        <div class="prod-meta">
+          ${badge}
+          ${p.codigo&&p.codigo!=='-'?`<span>🏷️ ${p.codigo}</span>`:''}
+          <span>📅 ${fechaStr}</span>
+        </div>
+        <div class="days-bar">
+          <div class="days-fill" style="width:${riesgo}%;background:${barColor}"></div>
+        </div>
+      </div>
+      <div class="prod-right">
+        <div class="dias-val" style="color:${color}">${diasTxt}</div>
+        <div class="dias-unit">${diasSub}</div>
+        <div class="stock-val">${p.stock} u.</div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
-    renderizarCarrito();
-  </script>
+function toast(msg) {
+  const t=$('toast'); t.textContent=msg; t.classList.add('visible');
+  setTimeout(()=>t.classList.remove('visible'),3000);
+}
+
+// Búsqueda en tiempo real
+$('filtro-nombre').addEventListener('input', aplicarFiltros);
+
+cargar();
+</script>
 </body>
 </html>
