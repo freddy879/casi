@@ -1,55 +1,437 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BEBIDAS YA!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      font-family: 'Pacifico', cursive;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>ContaNexus — Inventario</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0f1117;
+  --surface:  #1a1d27;
+  --card:     #21253a;
+  --border:   rgba(255,255,255,0.07);
+  --accent:   #ff3f34;
+  --green:    #00e096;
+  --red:      #ff4757;
+  --blue:     #4f8ef7;
+  --text:     #eef0f8;
+  --muted:    #6b7494;
+  --mono:     'Space Mono', monospace;
+  --sans:     'DM Sans', sans-serif;
+  --nav-h:    64px;
+  --top-h:    56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-    .typing {
-      font-size: 3.5rem;
-      color: #000000; /* Letras negras */
-      border-right: 3px solid #000000;
-      white-space: nowrap;
-      overflow: hidden;
-      width: 0;
-      animation: typing 4s steps(12, end) forwards, blink 0.8s step-end infinite;
-    }
+/* TOP */
+.topbar {
+  position: fixed; top:0; left:0; right:0; height: var(--top-h);
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; z-index: 100;
+}
+.topbar-brand { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: 3px; }
+.topbar-title  { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.btn-ic {
+  background: var(--card); border: 1px solid var(--border); color: var(--text);
+  width: 34px; height: 34px; border-radius: 10px; font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.btn-ic:active { background: var(--accent); }
 
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 10.5ch }
-    }
+/* SCROLL */
+.scroll-area {
+  padding-top: calc(var(--top-h) + 12px);
+  padding-bottom: calc(var(--nav-h) + 16px);
+  padding-left: 14px; padding-right: 14px;
+}
 
-    @keyframes blink {
-      50% { border-color: transparent }
-    }
+/* STAT CARDS */
+.stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 12px 10px; text-align: center; position: relative; overflow: hidden;
+}
+.stat-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: var(--sc-color, var(--accent));
+}
+.stat-ico  { font-size: 20px; margin-bottom: 4px; }
+.stat-val  { font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--sc-color, var(--text)); }
+.stat-lbl  { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
 
-    @media (max-width: 768px) {
-      .typing {
-        font-size: 2.8rem;
-      }
-    }
-  </style>
+/* SEARCH BAR */
+.search-wrap {
+  display: flex; gap: 8px; margin-bottom: 10px; align-items: center;
+}
+.search-input {
+  flex: 1; background: var(--card); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 14px; border-radius: 12px;
+  font-size: 14px; font-family: var(--sans); outline: none;
+}
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: var(--accent); }
+
+/* FILTER ROW */
+.filter-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.filter-row input[type="date"] {
+  flex: 1; min-width: 110px; background: var(--card); border: 1px solid var(--border);
+  color: var(--text); padding: 8px 10px; border-radius: 10px;
+  font-size: 12px; font-family: var(--sans); outline: none; -webkit-appearance: none;
+}
+.filter-row input[type="date"]:focus { border-color: var(--accent); }
+.filter-sel {
+  flex: 1; min-width: 100px; background: var(--card); border: 1px solid var(--border);
+  color: var(--text); padding: 8px 10px; border-radius: 10px;
+  font-size: 12px; font-family: var(--sans); outline: none;
+}
+.btn-search {
+  background: var(--accent); color: white; border: none; padding: 8px 14px;
+  border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+  font-family: var(--sans); transition: background .15s; white-space: nowrap;
+}
+.btn-search:active { background: #c0392b; }
+.btn-clear {
+  background: var(--card); color: var(--muted); border: 1px solid var(--border);
+  padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: var(--sans);
+}
+.btn-clear:active { border-color: var(--accent); color: var(--accent); }
+
+/* SECTION HEADER */
+.section-hd {
+  display: flex; align-items: center; gap: 8px; margin: 10px 0 8px;
+}
+.section-hd span { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+.section-hd::after { content:''; flex:1; height:1px; background: var(--border); }
+.pag-info { font-size: 11px; color: var(--muted); }
+
+/* MOV CARDS */
+.mov-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+  position: relative; overflow: hidden;
+}
+.mov-card::before {
+  content:''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--mc-color, var(--muted));
+  border-radius: 14px 0 0 14px;
+}
+.mov-icon { font-size: 22px; flex-shrink: 0; }
+.mov-body { flex: 1; min-width: 0; }
+.mov-nombre { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mov-meta   { font-size: 11px; color: var(--muted); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; }
+.mov-meta span { display: flex; align-items: center; gap: 3px; }
+.mov-right  { text-align: right; flex-shrink: 0; }
+.mov-qty    { font-family: var(--mono); font-size: 18px; font-weight: 700; }
+.mov-motivo { font-size: 10px; color: var(--muted); margin-top: 3px; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge-entrada { background: rgba(0,224,150,.12); color: var(--green); padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+.badge-salida  { background: rgba(255,71,87,.12);  color: var(--red);   padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+.btn-del {
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  width: 28px; height: 28px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: all .15s;
+}
+.btn-del:active { border-color: var(--red); color: var(--red); background: rgba(255,71,87,.1); }
+
+/* PAG */
+.pag-row { display: flex; justify-content: center; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.pag-btn {
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  padding: 7px 12px; border-radius: 8px; cursor: pointer; font-family: var(--mono);
+  font-size: 12px; transition: all .15s;
+}
+.pag-btn.activo { background: var(--accent); border-color: var(--accent); color: white; }
+.pag-btn:disabled { opacity: .3; cursor: default; }
+
+/* EMPTY / SPINNER */
+.empty { text-align: center; padding: 50px 20px; color: var(--muted); }
+.empty .ei { font-size: 36px; margin-bottom: 10px; }
+.empty p { font-size: 13px; }
+.spinner {
+  display: inline-block; width: 26px; height: 26px;
+  border: 3px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite; margin: 40px auto; display: block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* MODAL */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7);
+  z-index: 999; align-items: flex-end; justify-content: center;
+  padding: 0 12px 20px;
+}
+.modal-overlay.activo { display: flex; animation: fadeIn .2s; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.modal-sheet {
+  background: var(--surface); border-radius: 20px 20px 16px 16px;
+  padding: 24px 20px 28px; width: 100%; max-width: 420px; text-align: center;
+  border: 1px solid var(--border);
+  animation: slideUp .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes slideUp { from { transform: translateY(60px); opacity:0; } to { transform: none; opacity:1; } }
+.modal-sheet .mi { font-size: 36px; margin-bottom: 8px; }
+.modal-sheet h3 { font-size: 16px; margin-bottom: 8px; }
+.modal-sheet p  { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.modal-btns { display: flex; gap: 10px; }
+.btn-cancel { flex:1; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--sans); }
+.btn-delete { flex:1; background: var(--red); border: none; color: white; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--sans); }
+.btn-delete:active { background: #c0392b; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: calc(var(--nav-h) + 14px); left: 14px; right: 14px;
+  background: var(--surface); color: var(--text); padding: 12px 16px;
+  border-radius: 12px; font-size: 13px; font-weight: 600;
+  border: 1px solid var(--border);
+  transform: translateY(20px); opacity: 0;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1); z-index: 1000;
+  text-align: center;
+}
+.toast.visible { transform: none; opacity: 1; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed; bottom:0; left:0; right:0; height: var(--nav-h);
+  background: var(--surface); border-top: 1px solid var(--border);
+  display: flex; z-index: 100;
+}
+.nav-item {
+  flex:1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px; text-decoration: none;
+  color: var(--muted); font-size: 10px; font-weight: 600;
+  letter-spacing: .5px; transition: color .15s; padding-bottom: 4px;
+}
+.nav-item .ico { font-size: 20px; }
+.nav-item.active { color: var(--accent); }
+</style>
 </head>
 <body>
-  <h1 class="typing">¡BEBIDAS YA!</h1>
 
-  <script>
-    setTimeout(() => {
-      window.location.href = "inicio.html";
-    }, 4500); // Espera 4.5 segundos para redirigir
-  </script>
+<div class="topbar">
+  <span class="topbar-brand">NEXUS</span>
+  <span class="topbar-title">Inventario</span>
+  <button class="btn-ic" onclick="cargar()">⟳</button>
+</div>
+
+<div class="scroll-area">
+
+  <!-- STATS -->
+  <div class="stat-row">
+    <div class="stat-card" style="--sc-color:var(--green)">
+      <div class="stat-ico">📥</div>
+      <div class="stat-val" id="stat-entradas">-</div>
+      <div class="stat-lbl">Entradas hoy</div>
+    </div>
+    <div class="stat-card" style="--sc-color:var(--red)">
+      <div class="stat-ico">📤</div>
+      <div class="stat-val" id="stat-salidas">-</div>
+      <div class="stat-lbl">Salidas hoy</div>
+    </div>
+    <div class="stat-card" style="--sc-color:var(--blue)">
+      <div class="stat-ico">📋</div>
+      <div class="stat-val" id="stat-total">-</div>
+      <div class="stat-lbl">Total reg.</div>
+    </div>
+  </div>
+
+  <!-- BÚSQUEDA -->
+  <div class="search-wrap">
+    <input class="search-input" type="text" id="filtro-producto" placeholder="🔍 Buscar producto...">
+  </div>
+  <div class="filter-row">
+    <input type="date" id="filtro-desde">
+    <input type="date" id="filtro-hasta">
+    <select class="filter-sel" id="filtro-tipo">
+      <option value="">Todo</option>
+      <option value="entrada">Entradas</option>
+      <option value="salida">Salidas</option>
+    </select>
+  </div>
+  <div class="filter-row">
+    <button class="btn-search" onclick="aplicarFiltros()">🔍 Buscar</button>
+    <button class="btn-clear" onclick="limpiarFiltros()">✖ Limpiar</button>
+  </div>
+
+  <!-- LISTA -->
+  <div class="section-hd">
+    <span>Movimientos</span>
+    <span class="pag-info" id="pag-info"></span>
+  </div>
+  <div id="lista-mov">
+    <div class="spinner"></div>
+  </div>
+  <div class="pag-row" id="pag-btns"></div>
+
+</div>
+
+<!-- MODAL BORRAR -->
+<div class="modal-overlay" id="modalBorrar">
+  <div class="modal-sheet">
+    <div class="mi">🗑️</div>
+    <h3>Eliminar registro</h3>
+    <p>¿Seguro que deseas eliminar este movimiento? No se puede deshacer.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-delete" onclick="confirmarBorrar()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="movimiento.html"><span class="ico">📅</span><span>Caja</span></a>
+  <a class="nav-item active" href="entrada_salida.html"><span class="ico">🔄</span><span>Inventario</span></a>
+  <a class="nav-item" href="vencimientos.html"><span class="ico">⏳</span><span>Vencimientos</span></a>
+</nav>
+
+<script>
+const API = location.hostname==="localhost"
+  ? "http://localhost:3000"
+  : "https://agronaranjito-1.onrender.com";
+
+const POR_PAGINA = 15;
+let todos=[], filtrados=[], pagina=1, idABorrar=null;
+const $=id=>document.getElementById(id);
+
+async function cargar() {
+  $('lista-mov').innerHTML='<div class="spinner"></div>';
+  try {
+    const res = await fetch(API+'/movimientos-inventario');
+    if (!res.ok) throw new Error();
+    todos = await res.json();
+    filtrados = [...todos];
+    actualizarStats(); renderLista(); renderPag();
+  } catch {
+    $('lista-mov').innerHTML=`<div class="empty"><div class="ei">⚠️</div><p>Error al conectar</p></div>`;
+  }
+}
+
+function actualizarStats() {
+  const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Guayaquil' });
+  let ent=0, sal=0;
+  todos.forEach(m => {
+    if (m.fecha===hoy) {
+      if (m.tipo==='entrada') ent+=Number(m.cantidad||0);
+      else                    sal+=Number(m.cantidad||0);
+    }
+  });
+  $('stat-entradas').textContent=ent;
+  $('stat-salidas').textContent=sal;
+  $('stat-total').textContent=todos.length;
+}
+
+function aplicarFiltros() {
+  const desde=$('filtro-desde').value, hasta=$('filtro-hasta').value;
+  const tipo=$('filtro-tipo').value;
+  const prod=$('filtro-producto').value.toLowerCase().trim();
+  filtrados=todos.filter(m=>{
+    if(desde&&m.fecha<desde)return false;
+    if(hasta&&m.fecha>hasta)return false;
+    if(tipo&&m.tipo!==tipo)return false;
+    if(prod&&!(m.nombre||'').toLowerCase().includes(prod))return false;
+    return true;
+  });
+  pagina=1; renderLista(); renderPag();
+}
+
+function limpiarFiltros() {
+  $('filtro-desde').value=''; $('filtro-hasta').value='';
+  $('filtro-tipo').value=''; $('filtro-producto').value='';
+  filtrados=[...todos]; pagina=1; renderLista(); renderPag();
+}
+
+function renderLista() {
+  const inicio=(pagina-1)*POR_PAGINA;
+  const items=filtrados.slice(inicio, inicio+POR_PAGINA);
+  const total=filtrados.length;
+
+  $('pag-info').textContent=total
+    ? `${inicio+1}–${Math.min(inicio+POR_PAGINA,total)} de ${total}`
+    : '0 registros';
+
+  if (!items.length) {
+    $('lista-mov').innerHTML=`<div class="empty"><div class="ei">📭</div><p>No hay movimientos</p></div>`;
+    return;
+  }
+
+  $('lista-mov').innerHTML = items.map(m => {
+    const esE=m.tipo==='entrada';
+    const color=esE?'var(--green)':'var(--red)';
+    const badge=esE
+      ? `<span class="badge-entrada">📥 Entrada</span>`
+      : `<span class="badge-salida">📤 Salida</span>`;
+    const pref=esE?'+':'-';
+    return `
+    <div class="mov-card" style="--mc-color:${color}">
+      <div class="mov-icon">${esE?'📥':'📤'}</div>
+      <div class="mov-body">
+        <div class="mov-nombre">${m.nombre||'-'}</div>
+        <div class="mov-meta">
+          ${badge}
+          <span>📅 ${m.fecha||'-'}</span>
+          <span>🕐 ${m.hora||'-'}</span>
+          ${m.codigo&&m.codigo!=='-'?`<span>🏷️ ${m.codigo}</span>`:''}
+        </div>
+      </div>
+      <div class="mov-right">
+        <div class="mov-qty" style="color:${color}">${pref}${m.cantidad}</div>
+        <div class="mov-motivo">${m.motivo||'-'}</div>
+      </div>
+      <button class="btn-del" onclick="pedirBorrar('${m._id}')">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+function renderPag() {
+  const total=Math.ceil(filtrados.length/POR_PAGINA);
+  const c=$('pag-btns');
+  if (total<=1) { c.innerHTML=''; return; }
+  let h=`<button class="pag-btn" onclick="irPag(${pagina-1})" ${pagina===1?'disabled':''}>‹</button>`;
+  for (let i=1;i<=total;i++) {
+    if(total>6&&i>2&&i<total-1&&Math.abs(i-pagina)>1){ if(i===3||i===total-2) h+=`<button class="pag-btn" disabled>…</button>`; continue; }
+    h+=`<button class="pag-btn ${i===pagina?'activo':''}" onclick="irPag(${i})">${i}</button>`;
+  }
+  h+=`<button class="pag-btn" onclick="irPag(${pagina+1})" ${pagina===total?'disabled':''}>›</button>`;
+  c.innerHTML=h;
+}
+
+function irPag(n) {
+  const max=Math.ceil(filtrados.length/POR_PAGINA);
+  if(n<1||n>max)return;
+  pagina=n; renderLista(); renderPag();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function pedirBorrar(id) { idABorrar=id; $('modalBorrar').classList.add('activo'); }
+function cerrarModal()   { idABorrar=null; $('modalBorrar').classList.remove('activo'); }
+
+async function confirmarBorrar() {
+  if (!idABorrar) return;
+  try { await fetch(API+'/movimientos-inventario/'+idABorrar,{method:'DELETE'}); } catch {}
+  todos=todos.filter(m=>m._id!==idABorrar);
+  filtrados=filtrados.filter(m=>m._id!==idABorrar);
+  cerrarModal(); actualizarStats(); renderLista(); renderPag();
+  toast('✅ Registro eliminado');
+}
+
+function toast(msg) {
+  const t=$('toast'); t.textContent=msg; t.classList.add('visible');
+  setTimeout(()=>t.classList.remove('visible'),3000);
+}
+
+// Búsqueda en tiempo real
+$('filtro-producto').addEventListener('input', () => {
+  if ($('filtro-producto').value.length===0) limpiarFiltros();
+});
+
+cargar();
+</script>
 </body>
 </html>
